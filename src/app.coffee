@@ -66,15 +66,16 @@ module.exports = (app) ->
   #### File
   app.get '/file.mov', (req, res, next) ->
     
-    {v} = url.parse(req.url, true).query
-    item_token = v
+    {file_token} = url.parse(req.url, true).query
     
     {range} = req.headers
     if range
-      console.log '****** RANGE:', JSON.stringify(range)
+      throw new Error ('****** RANGE: ' + JSON.stringify(range))
     
-    res.writeHead 200, {'Content-Type': 'video/quicktime'}
-    res.end require('fs').readFileSync "/Users/a/Desktop/media-server/test/files/textmate.mov"
+    r.get "file_data:#{file_token}", (e, data) ->
+      # data = require('fs').readFileSync "/Users/a/Desktop/media-server/test/files/textmate.mov"
+      res.writeHead 200, {'Content-Type': 'video/quicktime'}
+      res.end data
   
   #### Upload
   app.post '/api/upload', (req, res, next) ->
