@@ -1,5 +1,6 @@
 
 url = require 'url'
+crypto = require 'crypto'
 stitch = require 'stitch'
 {randomToken, timeoutSet} = require 'tafa-misc-util'
 
@@ -59,9 +60,11 @@ module.exports = (app) ->
         file_token = #{JSON.stringify item.file_token};
       """
       item.item_token = item_token
-      res.render 'watch', locals:
-        item: item
-        js: js
+      r.get "file_data:#{item.file_token}", (e, data) ->
+        item.sha1 = crypto.createHash('sha1').update(data).digest('hex')
+        res.render 'watch', locals:
+          item: item
+          js: js
   
   #### File
   app.get '/file.mov', (req, res, next) ->
