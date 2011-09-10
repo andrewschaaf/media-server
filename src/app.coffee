@@ -1,5 +1,6 @@
 
 url = require 'url'
+stitch = require 'stitch'
 {randomToken, timeoutSet} = require 'tafa-misc-util'
 
 
@@ -32,6 +33,15 @@ module.exports = (app) ->
         info[k] = JSON.parse v.toString('utf-8')
       callback null, info
   
+  #### client.js
+  app.get '/client.js', (req, res, next) ->
+    package = stitch.createPackage {
+      paths: ["#{__dirname}/client"]
+    }
+    package.compile (e, js) ->
+      res.writeHead 200, {'Content-Type': 'text/javascript'}
+      res.end new Buffer js, 'utf-8'
+  
   #### Index
   app.get '/', (req, res, next) ->
     search (e, results) ->
@@ -44,9 +54,27 @@ module.exports = (app) ->
     {v} = url.parse(req.url, true).query
     item_token = v
     getInfo "item_info:#{item_token}", (e, item) ->
+      js = """
+        item_token = #{JSON.stringify item_token};
+        file_token = #{JSON.stringify item.file_token};
+      """
       item.item_token = item_token
       res.render 'watch', locals:
         item: item
+        js: js
+  
+  #### File
+  app.get '/file.mov', (req, res, next) ->
+    
+    {v} = url.parse(req.url, true).query
+    item_token = v
+    
+    {range} = req.headers
+    if range
+      console.log '****** RANGE:', JSON.stringify(range)
+    
+    res.writeHead 200, {'Content-Type': 'video/quicktime'}
+    res.end require('fs').readFileSync "/Users/a/Desktop/media-server/test/files/textmate.mov"
   
   #### Upload
   app.post '/api/upload', (req, res, next) ->

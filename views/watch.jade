@@ -1,5 +1,16 @@
 h2 Watch
 
+#mediaplayer JW Player goes here
+
+script(type="text/javascript")!= js
+script(type="text/javascript", src="jwplayer/jwplayer.js")
+script(type="text/javascript")
+  jwplayer("mediaplayer").setup({
+    flashplayer: "jwplayer/player.swf",
+    file: "/file.mov?v=" + file_token,
+    image: "/temp/gray.png"
+  });
+
 table
   tr
     td item_token
