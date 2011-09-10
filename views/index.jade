@@ -1,1 +1,8 @@
-h2 TODO /
+
+h2 Items
+table
+- each x in items
+  tr
+    td
+      a(href="/watch?v=" + x.item_token)
+        = x.item_token

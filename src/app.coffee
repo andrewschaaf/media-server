@@ -17,9 +17,38 @@ respondError = (res, message) ->
 module.exports = (app) ->
   r = app.redis
   
-  app.get '/', (req, res, next) ->
-    res.render 'index'
+  search = (callback) ->
+    r.lrange "item_tokens", 0, -1, (e, arr) ->
+      itemTokens = (x.toString() for x in arr)
+      items = ({item_token: item_token} for item_token in itemTokens)
+      callback null, {
+        items: items
+      }
   
+  getInfo = (k, callback) ->
+    r.hgetall k, (e, infoBufs) ->
+      info = {}
+      for own k, v of infoBufs
+        info[k] = JSON.parse v.toString('utf-8')
+      callback null, info
+  
+  #### Index
+  app.get '/', (req, res, next) ->
+    search (e, results) ->
+      {items} = results
+      res.render 'index', locals:
+        items: items
+  
+  #### Watch
+  app.get '/watch', (req, res, next) ->
+    {v} = url.parse(req.url, true).query
+    item_token = v
+    getInfo "item_info:#{item_token}", (e, item) ->
+      item.item_token = item_token
+      res.render 'watch', locals:
+        item: item
+  
+  #### Upload
   app.post '/api/upload', (req, res, next) ->
     item_token = randomToken 8
     file_token = randomToken 8
@@ -38,6 +67,7 @@ module.exports = (app) ->
             file_token: file_token
           }
   
+  #### Get file
   app.get '/api/get-file', (req, res, next) ->
     {file_token} = url.parse(req.url, true).query
     if not file_token
@@ -47,15 +77,12 @@ module.exports = (app) ->
       res.writeHead 200, {}
       res.end data
   
+  #### Search
   app.get '/api/search', (req, res, next) ->
-    r.lrange "item_tokens", 0, -1, (e, arr) ->
-      itemTokens = (x.toString() for x in arr)
-      items = ({item_token: item_token} for item_token in itemTokens)
-      respond res, {
-        items: items
-      }
+    search (e, results) ->
+      respond res, results
   
-  # TODO
+  #### TEMP
   app.get '/api/reset', (req, res, next) ->
     r.flushdb () ->
       console.log '**** Redis flushed ****'
