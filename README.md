@@ -2,20 +2,29 @@
 # Redis
 <pre>
 file_data:TOKEN   --> data
+item_tokens       --> LIST (ordered by created_at DESC)
+item_info:TOKEN   --> HASH->JSON
+                        file_token
+                        created_at
+                        completed_at
 </pre>
 
 
 # API
 <pre>
-POST /api/create-item
-  --> {item_token:"..."}
-
-POST /api/upload-file
+POST /api/upload
   ...raw body...
   --> {file_token:"..."}
 
 GET /api/get-file?file_token=...
   --> ...raw...
+
+GET /api/search
+  --> {
+    items: [
+      {item_token:"..."}
+    ]
+  }
 </pre>
 
 

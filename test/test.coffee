@@ -4,7 +4,7 @@ http = require 'http'
 assert = require 'assert'
 {readData} = require 'tafa-misc-util'
 
-assertEqual = (x, y) ->
+eq = (x, y) ->
   if x instanceof Buffer and y instanceof Buffer
     x64 = x.toString('base64')
     y64 = y.toString('base64')
@@ -15,7 +15,7 @@ assertEqual = (x, y) ->
         console.log '(same lengths)'
     assert.equal x.toString('base64'), y.toString('base64')
   else
-    assert.equal x, y
+    assert.deepEqual x, y
 
 
 read = (filename) ->
@@ -53,27 +53,30 @@ request = ({path,method,data}, callback) ->
     req.end()
 
 
-upload_file = (filename, callback) ->
+upload = (filename, callback) ->
   request {
     method: 'POST'
-    path:'/api/upload-file'
+    path:'/api/upload'
     data: read(filename)
   }, callback
 
 
 get_file = (file_token, callback) ->
-  request {
-    method: 'GET'
-    path: "/api/get-file?file_token=#{file_token}"
-  }, callback
+  request path:"/api/get-file?file_token=#{file_token}", callback
+
+
+search = (callback) ->
+  request path:"/api/search", callback
 
 
 main = () ->
   request path:'/api/reset', () ->
-    upload_file "textmate.mov", ({file_token}) ->
+    upload "textmate.mov", ({file_token, item_token}) ->
       get_file file_token, (data) ->
-        assertEqual read("textmate.mov"), data
-        console.log 'OK'
+        eq read("textmate.mov"), data
+        search (results) ->
+          eq results, {items: [{item_token: item_token}]}
+          console.log 'OK'
 
 
 #noisyExec "ruby test/selenium-tests.rb", (e, out, err) ->
