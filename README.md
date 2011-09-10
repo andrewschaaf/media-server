@@ -1,4 +1,25 @@
 
+# Redis
+<pre>
+file_data:TOKEN   --> data
+</pre>
+
+
+# API
+<pre>
+POST /api/create-item
+  --> {item_token:"..."}
+
+POST /api/upload-file
+  ...raw body...
+  --> {file_token:"..."}
+
+GET /api/get-file?file_token=...
+  --> ...raw...
+</pre>
+
+
+
 # Developing
 
 * NodeJS 0.4.x

@@ -9,5 +9,5 @@ task 'dev', () ->
 
 
 task 'test', () ->
-  noisyExec "ruby test/selenium-tests.rb", (e, out, err) ->
-    throw e if e
+  require('./test/test').main()
+

@@ -11,7 +11,7 @@ app.use express.static "#{__dirname}/../public"
 app.use express.errorHandler {dumpExceptions: true, showStack: true}
 
 [PORT, HOST] = [6379, 'localhost']
-app.redis = require('redis').createClient PORT, HOST
+app.redis = require('redis').createClient PORT, HOST, return_buffers:true
 
 require('./app')(app)
 
