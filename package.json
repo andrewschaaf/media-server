@@ -1,0 +1,25 @@
+{
+  "name": "TODO",
+  "version": "0.0.1",
+  
+  "description": "TODO description",
+  "url": "https://github.com/TODO/TODO",
+  
+  "dependencies": {
+    
+    "underscore": ">=1.1.7",
+    "async": ">=0.1.9",
+    "strftime": ">=0.4.6",
+    "tafa-misc-util": ">=0.1.3",
+    
+    "express": ">=2.4.3",
+    "jade": ">=0.13.0"
+  },
+  
+  "author": "Andrew Schaaf <andrew@andrewschaaf.com> (http://andrewschaaf.com)",
+  
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/TODO/TODO.git"
+  }
+}
