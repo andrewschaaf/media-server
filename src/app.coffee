@@ -86,8 +86,10 @@ module.exports = (app) ->
     r.lpush "item_tokens", item_token
     
     req.on 'data', (data) ->
+      console.log "[UPLOAD] got #{data.length} more bytes"
       r.append "file_data:#{file_token}", data
     req.on 'end', () ->
+      console.log "[UPLOAD] DONE"
       timeoutSet 500, () -> #TODO: respond only after all data saved
         r.hset "item_info:#{item_token}", 'completed_at', JSON.stringify(new Date().getTime()), (e, v) ->
           respond res, {
