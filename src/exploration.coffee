@@ -10,8 +10,11 @@ parseRangeHeader = (range) ->
   # bytes=1261188-
   start = 0
   end = null
-  if m = range.match /bytes=([0-9]+)-/
-    start = parseInt(m[1], 10)
+  if range
+    if m = range.match /bytes=([0-9]+)-/
+      start = parseInt(m[1], 10)
+    else
+      throw new Error "range: #{range}"
   {
     start: start
     end: end
@@ -41,12 +44,16 @@ module.exports = (app) ->
   app.get '/exploration/video.mp4', (req, res, next) ->
     
     {range} = req.headers
-    if range
-      {start, end} = parseRangeHeader range
+    {start, end} = parseRangeHeader range
+    
+    console.log "*** start: #{start}"
     
     res.writeHead 200, {'Content-Type': 'video/mp4'}
-    file = fs.createReadStream "#{__dirname}/../test/files/talk.mp4"
+    file = fs.createReadStream "#{__dirname}/../test/files/talk.mp4", {start: start}
     file.pipe res
+  
+  app.get '/exploration/streamed.mp4', (req, res, next) ->
+    
 
 
 # video.webkitEnterFullscreen
