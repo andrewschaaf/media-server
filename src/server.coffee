@@ -1,5 +1,6 @@
 express = require 'express'
 form = require 'connect-form'
+options = require './options'
 
 # Create app
 app = express.createServer express.logger()
@@ -22,6 +23,6 @@ require('./app')(app)
 require('./api')(app)
 
 # Kick it off
-port = process.env.PORT or 3000
+port = process.env.PORT or options.THIS_PORT
 app.listen port, () ->
   console.log "Listening on #{port}..."

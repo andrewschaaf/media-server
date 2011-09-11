@@ -1,6 +1,7 @@
 http = require 'http'
 fs = require 'fs'
 livestream = require './livestream'
+options = require './options'
 
 
 # Helper view functions
@@ -13,17 +14,15 @@ respondError = (res, message) ->
   res.end JSON.stringify {error: {message: message}}
 
 
+# Given a file stream of the video piece, sends it off to the segmenter service
+# to be broken up and returned in pieces
 sendFileToSegmenter = (stream,callback) ->
-  callback_url = "http://192.168.201.196:3000/internal/add_segment"
+  callback_url = "http://#{options.THIS_HOSTNAME}:#{options.THIS_PORT}/internal/add_segment"
   post_options = 
-    host: 'vbox'
-    port: '15437'
+    host: options.SEGMENTER_HOSTNAME
+    port: options.SEGMENTER_PORT
     path: "/segment_ts/?callback_url=#{encodeURIComponent(callback_url)}"
     method: 'POST'
-
-  #post_options.host = 'localhost'
-  #post_options.port = 3000
-
 
   console.log "sending file to segment service:"
   console.log post_options
