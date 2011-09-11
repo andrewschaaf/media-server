@@ -13,7 +13,7 @@ respondError = (res, message) ->
   res.end JSON.stringify {error: {message: message}}
 
 
-sendFileToSegmenter = (path,callback) ->
+sendFileToSegmenter = (stream,callback) ->
   callback_url = "http://192.168.201.196:3000/internal/add_segment"
   post_options = 
     host: 'vbox'
@@ -21,14 +21,17 @@ sendFileToSegmenter = (path,callback) ->
     path: "/segment_ts/?callback_url=#{encodeURIComponent(callback_url)}"
     method: 'POST'
 
+  #post_options.host = 'localhost'
+  #post_options.port = 3000
 
-  console.log "sending file at path #{path} to:"
+
+  console.log "sending file to segment service:"
   console.log post_options
   post_request = http.request post_options, (res) ->
     if callback? then callback()
 
   # Pipe file into the post request
-  fs.createReadStream(path).pipe post_request
+  stream.pipe post_request
 
 
 module.exports = (app) ->
@@ -65,13 +68,9 @@ module.exports = (app) ->
     livestream_id = req.params.id
     ls = livestream.getLivestream(livestream_id)
 
-    req.form.complete (err,fields,files) ->
-      if err
-        res.end err
-      else
-        # Forward along the file to the segmenter app
-        sendFileToSegmenter files.segment.path, ->
-          res.end "ok"
+    # Use the stream of the body data to send to the segmenter service
+    sendFileToSegmenter req, ->
+      res.end "ok"
 
   app.post '/internal/add_segment', (req,res) ->
     stream_id = req.param('stream')
@@ -84,23 +83,26 @@ module.exports = (app) ->
     destdir = "#{__dirname}/../public/segmented/"
     filename = "#{stream_id}-#{Math.floor(Math.random()*1000000)}.ts"
     dest = destdir + filename
+    url = "/segmented/#{filename}"
 
     # Write out the file
-    console.log 'pipe'
-    console.log 'endpipe'
-    console.log dest
     f = fs.createWriteStream dest
     f.on 'close', ->
       console.log "Wrote file #{dest}"
 
       # Add link to the live stream
-      url = "/segmented/#{filename}"
       ls.addTs url
 
-      # Close the stream
+      # Close the request
       res.end 'ok'
 
 
     # Write out file
+    console.log "Writing to #{dest}"
     req.pipe(f)
+
+  # DEBUG: A pretend segment handler
+  app.post '/segment_ts/', (req,res) ->
+    console.log "got post request with callback: #{req.param('callback_url')}"
+    setTimeout (-> res.end()), 3000
 
