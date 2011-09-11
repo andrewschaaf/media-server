@@ -42,6 +42,7 @@ module.exports = (app) ->
       "livestream_id":livestream_id
       "playlist_url":playlist_url
 
+  # Manual upload page for debugging
   app.get '/stream/:id/upload/', (req,res) ->
     res.render 'streamupload.jade'
 
