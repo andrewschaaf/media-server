@@ -14,14 +14,16 @@ respondError = (res, message) ->
 
 
 sendFileToSegmenter = (path,callback) ->
+  callback_url = "http://192.168.201.196:3000/internal/add_segment"
   post_options = 
-    host: 'localhost'
-    port: '3000'
-    path: '/testpost'
+    host: 'vbox'
+    port: '15437'
+    path: "/segment_ts/?callback_url=#{encodeURIComponent(callback_url)}"
     method: 'POST'
 
 
-  console.log "sending file at path #{path}"
+  console.log "sending file at path #{path} to:"
+  console.log post_options
   post_request = http.request post_options, (res) ->
     if callback? then callback()
 
@@ -80,7 +82,7 @@ module.exports = (app) ->
 
     # Find out where it should go
     destdir = "#{__dirname}/../public/segmented/"
-    filename = "#{stream_id}-#{Math.floor(Math.random()*1000000)}"
+    filename = "#{stream_id}-#{Math.floor(Math.random()*1000000)}.ts"
     dest = destdir + filename
 
     # Write out the file
