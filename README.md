@@ -31,6 +31,21 @@ Get node and npm installed, then
     cake dev
     node lib/server.js
 
+# Using it
+
+## Adding video
+
+Do an HTTP POST request to http://localhost:3000/streams/<your stream
+name>/upload/ with a piece of a MPEG4-encoded video.  (For example, one
+thats been run through ffMPEG)
+
+## Viewing the video
+
+Point your *Safari* or *Mobile Safari* browser (sorry no Chrome) to
+http://localhost:3000/streams/<your stream name>/ and sit back and watch
+the show.  There can be up to a 10 second delay when new content comes
+in due to the way HLS works.
+
 # You also need...
 
 We also have a server that does the segmenting for you, but only runs on
