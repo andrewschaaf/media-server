@@ -16,7 +16,8 @@
     
     "express": ">=2.4.3",
     "jade": ">=0.13.0",
-    "redis": ">=0.6.7"
+    "redis": ">=0.6.7",
+    "connect-form": ">=0.2.1"
   },
   
   "author": "Andrew Schaaf <andrew@andrewschaaf.com> (http://andrewschaaf.com)",

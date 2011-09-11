@@ -1,4 +1,5 @@
 express = require 'express'
+form = require 'connect-form'
 
 # Create app
 app = express.createServer express.logger()
@@ -9,9 +10,11 @@ app.set 'view engine', 'jade'
 
 # Middleware
 app.use express.bodyParser()
+app.use form({ keepExtensions: true })
 app.use app.router
 app.use express.static "#{__dirname}/../public"
 app.use express.errorHandler {dumpExceptions: true, showStack: true}
+
 
 
 # Main app code

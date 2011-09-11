@@ -42,4 +42,6 @@ module.exports = (app) ->
       "livestream_id":livestream_id
       "playlist_url":playlist_url
 
+  app.get '/stream/:id/upload/', (req,res) ->
+    res.render 'streamupload.jade'
 

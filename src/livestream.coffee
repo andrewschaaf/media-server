@@ -48,7 +48,7 @@ class LiveStream
 # Debug livestream already added
 stream = getLivestream 'fixture'
 
-stream.addTs '/chunk-1.ts'
+stream.addTs 'http://localhost:3000/chunk-1.ts'
 stream.addTs '/chunk-2.ts'
 stream.addTs '/chunk-3.ts'
 

@@ -1,3 +1,5 @@
+http = require 'http'
+fs = require 'fs'
 livestream = require './livestream'
 
 
@@ -9,6 +11,22 @@ respond = (res, x) ->
 respondError = (res, message) ->
   res.writeHead 400, {'Content-Type': 'text/javascript'}
   res.end JSON.stringify {error: {message: message}}
+
+
+sendFileToSegmenter = (path,callback) ->
+  post_options = 
+    host: 'localhost'
+    port: '3000'
+    path: '/testpost'
+    method: 'POST'
+
+
+  console.log "sending file at path #{path}"
+  post_request = http.request post_options, (res) ->
+    if callback? then callback()
+
+  # Pipe file into the post request
+  fs.createReadStream(path).pipe post_request
 
 
 module.exports = (app) ->
@@ -39,3 +57,17 @@ module.exports = (app) ->
     ls.addTs(ts_url)
 
     return respond(res,{'result':'ok'})
+
+  app.post '/stream/:id/upload/', (req,res) ->
+    # Get the livestream
+    livestream_id = req.params.id
+    ls = livestream.getLivestream(livestream_id)
+
+    req.form.complete (err,fields,files) ->
+      if err
+        res.end err
+      else
+        sendFileToSegmenter files.segment.path, ->
+          res.end "ok"
+
+
