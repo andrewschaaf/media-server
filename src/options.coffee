@@ -10,5 +10,6 @@
 @SEGMENT_LOCALLY = false
 
 if @SEGMENT_LOCALLY
+  @THIS_HOSTNAME = 'localhost'
   @SEGMENTER_HOSTNAME = 'localhost'
   @SEGMENTER_PORT = @THIS_PORT

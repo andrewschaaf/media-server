@@ -16,8 +16,8 @@ respondError = (res, message) ->
 
 # Given a file stream of the video piece, sends it off to the segmenter service
 # to be broken up and returned in pieces
-sendFileToSegmenter = (stream,callback) ->
-  callback_url = "http://#{options.THIS_HOSTNAME}:#{options.THIS_PORT}/internal/add_segment"
+sendFileToSegmenter = (stream,stream_id, callback) ->
+  callback_url = "http://#{options.THIS_HOSTNAME}:#{options.THIS_PORT}/internal/add_segment?stream=#{stream_id}"
   post_options = 
     host: options.SEGMENTER_HOSTNAME
     port: options.SEGMENTER_PORT
@@ -68,7 +68,7 @@ module.exports = (app) ->
     ls = livestream.getLivestream(livestream_id)
 
     # Use the stream of the body data to send to the segmenter service
-    sendFileToSegmenter req, ->
+    sendFileToSegmenter req, req.params.id, ->
       res.end "ok"
 
   app.post '/internal/add_segment', (req,res) ->
@@ -85,6 +85,7 @@ module.exports = (app) ->
     url = "/segmented/#{filename}"
 
     # Write out the file
+    console.log 'add_segment writing out file'
     f = fs.createWriteStream dest
     f.on 'close', ->
       console.log "Wrote file #{dest}"
@@ -100,8 +101,22 @@ module.exports = (app) ->
     console.log "Writing to #{dest}"
     req.pipe(f)
 
-  # DEBUG: A pretend segment handler
+  # DEBUG: A pretend segment handler that just takes the file and passes it through
   app.post '/segment_ts/', (req,res) ->
     console.log "got post request with callback: #{req.param('callback_url')}"
-    setTimeout (-> res.end()), 3000
+
+    post_options = 
+      host: 'localhost'
+      port: options.THIS_PORT
+      path: req.param('callback_url')
+      method: 'POST'
+
+    console.log "PRETEND SEGMENTER: Sending file to /internal/add_segment"
+    console.log post_options
+    post_request = http.request post_options, (this_res) ->
+      console.log "PRETEND SEGMENTER: file sent"
+      res.end()
+
+    # Pipe file into the post request
+    req.pipe post_request
 
