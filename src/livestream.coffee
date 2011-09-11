@@ -10,6 +10,9 @@ getLivestream = @getLivestream = (id) ->
     livestreams[id] = ls
     return ls
 
+allLivestreams = @allLivestreams = ->
+  return livestreams
+
 # Represents a live streaming room
 class LiveStream
   constructor: (@id) ->

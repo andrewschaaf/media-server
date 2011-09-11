@@ -16,10 +16,9 @@ module.exports = (app) ->
 
   # Index
   app.get '/', (req, res, next) ->
-    search (e, results) ->
-      {items} = results
-      res.render 'index', locals:
-        items: items
+    lss = livestream.allLivestreams()
+    res.render 'index', locals:
+      'lss': lss
 
 
   # Get the playlist file for the stream
