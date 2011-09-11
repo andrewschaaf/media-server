@@ -1,0 +1,16 @@
+body {
+  background: url('/images/concrete_wall.png');
+  color: white;
+  font-family: Arial, sans;
+}
+.main-column {
+  text-align: center;
+}
+.livestream-page h2 {
+  margin-top: 20px;
+  margin-bottom: 30px;
+  font-size: 24px;
+}
+.livestream-page video {
+  box-shadow: 1px 1px 8px #000;
+}
