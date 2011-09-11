@@ -122,3 +122,34 @@ module.exports = (app) ->
       console.log '**** Redis flushed ****'
       respond res, {}
 
+
+  buildPlaylist = (start,stop) ->
+    newline = "\r\n"
+    text = ""
+    text += "#EXTM3U#{newline}"
+    text += "#EXT-X-TARGETDURATION:5#{newline}"
+
+    for chunkNum in [start..stop]
+      filename = "/chunk-#{chunkNum}.ts"
+      text += "#EXTINF:5#{newline}"
+      text += "#{filename}#{newline}"
+
+    return text
+
+
+
+  # Update the TS blocks sent every 15 secs to simulate a live stream
+  currentTs = 1
+  updateBlock = ->
+    currentTs += 2
+    setTimeout(updateBlock, 10000)
+  setTimeout(updateBlock, 10000)
+
+  app.get '/testoutput', (req,res) ->
+      res.end buildPlaylist(currentTs,currentTs + 1)
+
+  app.get '/livestream.m3u8', (req,res) ->
+      res.end buildPlaylist(currentTs,currentTs + 1)
+
+  app.get '/teststreaming', (req,res) ->
+      res.render 'teststreaming'
