@@ -10,6 +10,8 @@ getLivestream = @getLivestream = (id) ->
     livestreams[id] = ls
     return ls
 
+
+# Return all the current livestreams in the database
 allLivestreams = @allLivestreams = ->
   return livestreams
 
@@ -37,6 +39,9 @@ class LiveStream
 
   addTs: (url) ->
     @ts_urls.push(url)
+
+  getTss: ->
+    return @ts_urls
 
 
 

@@ -16,6 +16,7 @@ app.use express.errorHandler {dumpExceptions: true, showStack: true}
 
 # Main app code
 require('./app')(app)
+require('./api')(app)
 
 # Kick it off
 port = process.env.PORT or 3000

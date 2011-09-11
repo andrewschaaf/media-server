@@ -12,8 +12,6 @@ respondError = (res, message) ->
 
 
 module.exports = (app) ->
-  r = app.redis
-
   # Index
   app.get '/', (req, res, next) ->
     lss = livestream.allLivestreams()
@@ -43,10 +41,5 @@ module.exports = (app) ->
     res.render 'stream',
       "livestream_id":livestream_id
       "playlist_url":playlist_url
-
-
-  app.get '/teststreaming', (req,res) ->
-      res.render 'teststreaming'
-
 
 
