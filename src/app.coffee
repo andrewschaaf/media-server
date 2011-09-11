@@ -3,6 +3,7 @@ url = require 'url'
 crypto = require 'crypto'
 stitch = require 'stitch'
 {randomToken, timeoutSet} = require 'tafa-misc-util'
+livestream = require './livestream'
 
 
 
@@ -123,33 +124,32 @@ module.exports = (app) ->
       respond res, {}
 
 
-  buildPlaylist = (start,stop) ->
-    newline = "\r\n"
-    text = ""
-    text += "#EXTM3U#{newline}"
-    text += "#EXT-X-TARGETDURATION:5#{newline}"
+  # Get the playlist file for the stream
+  app.get '/stream/:id/playlist.m3u8', (req,res,livestream_id) ->
+    livestream_id = req.params.id
 
-    for chunkNum in [start..stop]
-      filename = "/chunk-#{chunkNum}.ts"
-      text += "#EXTINF:5#{newline}"
-      text += "#{filename}#{newline}"
+    # Get the object
+    ls = livestream.getLivestream(livestream_id)
 
-    return text
+    # Create the current version of the playlis
+    res.writeHead 200, {'Content-Type': 'application/x-mpegURL'}
+    res.end ls.playlistText()
 
+  # Return the page that is actually displaying the livestream
+  app.get '/stream/:id/', (req,res) ->
+    livestream_id = req.params.id
 
+    # URL of the streaming playlist
+    playlist_url = "/stream/#{livestream_id}/playlist.m3u8"
 
-  # Update the TS blocks sent every 15 secs to simulate a live stream
-  currentTs = 1
-  updateBlock = ->
-    currentTs += 2
-    setTimeout(updateBlock, 10000)
-  setTimeout(updateBlock, 10000)
+    # Render the page
+    res.render 'stream',
+      "livestream_id":livestream_id
+      "playlist_url":playlist_url
 
-  app.get '/testoutput', (req,res) ->
-      res.end buildPlaylist(currentTs,currentTs + 1)
-
-  app.get '/livestream.m3u8', (req,res) ->
-      res.end buildPlaylist(currentTs,currentTs + 1)
 
   app.get '/teststreaming', (req,res) ->
       res.render 'teststreaming'
+
+
+

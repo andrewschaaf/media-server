@@ -6,3 +6,5 @@ public/*css
 chromedriver.log
 
 test/files/talk.mp4
+*.ts
+*.m3u*
